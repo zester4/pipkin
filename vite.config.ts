@@ -157,6 +157,14 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   resolve: { tsconfigPaths: true },
+  // Tailwind runs through @tailwindcss/vite. An inline PostCSS config stops
+  // Vite from walking up into a parent folder (for example Downloads) and
+  // loading a stray postcss.config that requires tailwindcss.
+  css: {
+    postcss: {
+      plugins: [],
+    },
+  },
   plugins: [
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
