@@ -20,7 +20,7 @@
  * `process.env`, which is why the merge has to happen before Vite starts.
  */
 import { spawn } from "node:child_process";
-import { readFileSync, realpathSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { constants as osConstants } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -104,6 +104,22 @@ export function isMainModule(moduleUrl) {
   }
 }
 
+function commandLaunch(command, args) {
+  // npm scripts put the bare name `vite` on PATH. On Windows that file is
+  // vite.cmd, and spawn() without a shell does not resolve it (ENOENT).
+  // Run the package's JS entry with this Node instead.
+  const bare = !command.includes("/") && !command.includes("\\");
+  if (bare) {
+    const entry = join(projectRoot(), "node_modules", command, "bin", `${command}.js`);
+    if (existsSync(entry)) return { command: process.execPath, args: [entry, ...args], shell: false };
+    if (!existsSync(join(projectRoot(), "node_modules"))) {
+      console.error(`[with-app-env] ${command} was not found. In this folder run: npm install`);
+      process.exit(127);
+    }
+  }
+  return { command, args, shell: process.platform === "win32" && bare };
+}
+
 function main(argv) {
   const [command, ...args] = argv;
   if (!command) {
@@ -111,7 +127,8 @@ function main(argv) {
     process.exit(2);
   }
   const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
-  const child = spawn(command, args, { stdio: "inherit", env });
+  const launch = commandLaunch(command, args);
+  const child = spawn(launch.command, launch.args, { stdio: "inherit", env, shell: launch.shell });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => child.kill(signal));

@@ -6,15 +6,26 @@ Orchard Hop. A small fox, three stages, and the beasts at the end of the night l
 - **Moon Grove** — night lanes, then the grove beast
 - **Storm Crown** — rain, giants, and the crown
 
-## Play locally
+# Pipkin
+
+Orchard Hop. A small fox, three stages, and the beasts at the end of the night lanes.
+
+- **Orchard** — six daytime lanes
+- **Moon Grove** — night lanes, then the grove beast
+- **Storm Crown** — rain, giants, and the crown
+
+## Play on a PC
+
+You need [Node.js](https://nodejs.org) (version 22 is a safe pick). In the project folder:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open the app and press Play.
+Then open [http://localhost:8080](http://localhost:8080) in a browser.
 
-On a phone, Left, Right, and Jump sit under the picture in portrait and in the side gutters in landscape. Turning the phone keeps the picture in proportion: portrait shows more of the lane from above, landscape stays wide.
+`npm install` has to come first. Without it, `npm run dev` stops with `spawn vite ENOENT`.
 
-Keyboard: arrows or A and D to move, Space or W to jump, Esc to pause. Double-tap Jump for a second hop. Down and Jump drops through a plank.
+Keyboard: arrows or A and D to move, Space, W, or Up to jump, S or Down with jump to drop through a plank, Esc or P to pause. Press jump again in the air for a second hop. Enter or Space starts a run from the title screen.
+
